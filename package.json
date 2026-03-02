@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "GitHub issues as local Markdown files for grep and AI agents.",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atinux/github-grep.git"
+  },
+  "homepage": "https://github.com/atinux/github-grep#readme",
+  "bugs": "https://github.com/atinux/github-grep/issues",
+  "license": "MIT",
   "bin": {
     "github-grep": "./bin/github-grep.mjs"
   },
