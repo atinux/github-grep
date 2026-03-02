@@ -1,5 +1,8 @@
 # github-grep
 
+[![npm version](https://img.shields.io/npm/v/github-grep?color=black)](https://npmx.dev/package/github-grep)
+[![license](https://img.shields.io/github/license/atinux/github-grep?color=black)](https://github.com/atinux/github-grep/blob/main/LICENSE)
+
 Fetch GitHub issues into local Markdown files so AI agents (and humans) can search them with `grep` and `rg` instead of hitting the GitHub API.
 
 ## Why?
