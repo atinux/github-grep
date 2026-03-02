@@ -1,0 +1,33 @@
+{
+  "name": "github-grep",
+  "version": "0.1.0",
+  "description": "GitHub issues as local Markdown files for grep and AI agents.",
+  "type": "module",
+  "bin": {
+    "github-grep": "./bin/github-grep.mjs"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "lint": "oxlint src/ test/",
+    "prepublishOnly": "pnpm build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepare": "pnpm build"
+  },
+  "dependencies": {
+    "citty": "latest",
+    "octokit": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.3",
+    "oxlint": "^1.51.0",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vitest": "^4.0.18"
+  }
+}
