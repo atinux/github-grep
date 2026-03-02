@@ -29,6 +29,8 @@ npx github-grep <owner/repo>
 
 This creates `.github-grep/` with all issues as Markdown files. Re-running the same command auto-detects existing data and only fetches what changed.
 
+Add `.github-grep/` to `.gitignore` if you don't want to track fetched data in version control. Or commit it so AI agents always have access without re-fetching.
+
 To include pull requests:
 
 ```bash
