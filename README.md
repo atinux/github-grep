@@ -20,6 +20,14 @@ AI coding agents struggle with GitHub's issue search -- limited query syntax, no
 | Rate limits | 5,000 req/hour | One-time fetch, then unlimited |
 | AI agent friendly | Requires API tool | Just `grep` |
 
+## Agent Skill
+
+`github-grep` ships with an [agent skill](https://skills.sh) that teaches AI agents how to use it. Install it so your agent automatically uses `grep` instead of the GitHub API when searching issues.
+
+```bash
+npx skills add atinux/github-grep
+```
+
 ## Use Cases
 
 ### Give AI agents full context on issues
