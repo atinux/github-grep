@@ -1,7 +1,7 @@
 {
   "name": "github-grep",
   "version": "0.1.1",
-  "description": "GitHub issues as local Markdown files for grep and AI agents.",
+  "description": "GitHub issues with comments and reactions as local Markdown files for grep and AI agents.",
   "type": "module",
   "repository": {
     "type": "git",
