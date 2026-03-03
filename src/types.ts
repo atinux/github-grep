@@ -8,6 +8,13 @@ export interface CLIOptions {
   since?: string
 }
 
+export interface FetchResult {
+  total: number
+  written: number
+  rateLimited: boolean
+  resetAt?: Date
+}
+
 export interface IssueMeta {
   number: number
   title: string

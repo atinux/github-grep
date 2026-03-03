@@ -2,7 +2,7 @@ import { execSync } from "node:child_process"
 import { createInterface } from "node:readline"
 import { defineCommand, runMain } from "citty"
 import { fetchAllIssues } from "./fetcher.js"
-import { writeIssues, writeIndex, readIndexMeta, updateIssues, readAllIssueMetas, writeIndexFromMetas, type IndexOptions } from "./writer.js"
+import { readIndexMeta, prepareOutputDir, writeIssueBatch, readAllIssueMetas, writeIndexFromMetas, type IndexOptions } from "./writer.js"
 import type { CLIOptions } from "./types.js"
 
 function confirm(question: string): Promise<boolean> {
@@ -129,24 +129,33 @@ const main = defineCommand({
     }
 
     const indexOpts: IndexOptions = { repo: args.repo, state, includePrs }
+    const dir = options.output
 
     const startTime = Date.now()
 
-    const issues = await fetchAllIssues(options)
+    await prepareOutputDir(dir, !isUpdate)
 
-    if (isUpdate) {
-      await updateIssues(issues, options.output)
-      const allMetas = await readAllIssueMetas(options.output)
-      await writeIndexFromMetas(allMetas, options.output, indexOpts)
-    } else {
-      await writeIssues(issues, options.output)
-      await writeIndex(issues, options.output, indexOpts)
-    }
+    const result = await fetchAllIssues(options, async (batch) => {
+      await writeIssueBatch(batch, dir)
+    })
+
+    const allMetas = await readAllIssueMetas(dir)
+    await writeIndexFromMetas(allMetas, dir, indexOpts)
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
-    const dir = options.output
-    const issueCount = issues.filter((i) => !i.isPullRequest).length
-    const prCount = issues.filter((i) => i.isPullRequest).length
+
+    if (result.rateLimited) {
+      const resetLabel = result.resetAt
+        ? ` Resets at ${result.resetAt.toLocaleTimeString()} (${Math.ceil((result.resetAt.getTime() - Date.now()) / 60000)} min).`
+        : ""
+      console.log(`\nRate limit hit after saving ${result.written}/${result.total} issues.${resetLabel}`)
+      console.log(`Run the same command again later to continue where you left off.`)
+      console.log(`\n  github-grep ${args.repo}`)
+      process.exit(1)
+    }
+
+    const issueCount = allMetas.filter((i) => !i.isPullRequest).length
+    const prCount = allMetas.filter((i) => i.isPullRequest).length
     const verb = isUpdate ? "updated" : "saved"
     const parts = [`${issueCount} issues`]
     if (prCount > 0) parts.push(`${prCount} PRs`)

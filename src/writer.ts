@@ -129,15 +129,33 @@ function issueSubdir(issue: { isPullRequest: boolean }): string {
   return issue.isPullRequest ? "pulls" : "issues"
 }
 
-export async function writeIssues(issues: Issue[], outputDir: string): Promise<void> {
+export async function prepareOutputDir(outputDir: string, clean: boolean): Promise<void> {
   const issuesDir = join(outputDir, "issues")
   const pullsDir = join(outputDir, "pulls")
-  await rm(issuesDir, { recursive: true, force: true })
-  await rm(pullsDir, { recursive: true, force: true })
+  if (clean) {
+    await rm(issuesDir, { recursive: true, force: true })
+    await rm(pullsDir, { recursive: true, force: true })
+  }
   await mkdir(issuesDir, { recursive: true })
+  await mkdir(pullsDir, { recursive: true })
+}
 
-  const hasPrs = issues.some((i) => i.isPullRequest)
-  if (hasPrs) await mkdir(pullsDir, { recursive: true })
+export async function writeIssueBatch(issues: Issue[], outputDir: string): Promise<void> {
+  for (const issue of issues) {
+    const dir = join(outputDir, issueSubdir(issue))
+    const prefix = padNumber(issue.number)
+    const existingFiles = await readdir(dir).catch(() => [] as string[])
+    for (const old of existingFiles.filter((f) => f.startsWith(prefix))) {
+      await rm(join(dir, old), { force: true })
+    }
+    const filename = issueFilename(issue)
+    const content = buildIssueMarkdown(issue)
+    await writeFile(join(dir, filename), content, "utf-8")
+  }
+}
+
+export async function writeIssues(issues: Issue[], outputDir: string): Promise<void> {
+  await prepareOutputDir(outputDir, true)
 
   const issueCount = issues.filter((i) => !i.isPullRequest).length
   const prCount = issues.filter((i) => i.isPullRequest).length
